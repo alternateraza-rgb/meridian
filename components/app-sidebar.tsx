@@ -35,8 +35,8 @@ export function AppSidebar() {
         })}
       </div>
       <div className="notice" style={{ marginTop: 28 }}>
-        <FolderKanban size={16} /> Demo projects are stored in this browser. Connect Supabase to persist
-        across users and teams.
+        <FolderKanban size={16} /> Log in to save projects in Supabase. If you continue without a session,
+        Meridian uses local demo storage.
       </div>
     </aside>
   );

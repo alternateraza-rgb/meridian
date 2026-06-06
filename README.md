@@ -17,9 +17,9 @@ The current implementation focuses on the first sellable workflow:
 - Next.js App Router
 - React
 - TypeScript
-- Supabase-ready auth/database/storage architecture
+- Supabase-backed auth/database/storage architecture
 - OpenAI/Anthropic-ready generation routes
-- Local browser storage demo persistence
+- Local browser storage fallback for visitors without a session
 
 ## Getting started
 
@@ -34,7 +34,8 @@ Open `http://localhost:3000`.
 
 Copy `.env.example` to `.env.local` and fill in the providers you want to enable.
 
-If no Supabase keys are present, the app runs in demo mode with local browser storage.
+Logged-in users save projects, generated research, scripts, storyboards, and shot lists to Supabase.
+If no Supabase keys or session are present, the app runs in demo mode with local browser storage.
 If no AI keys are present, generation endpoints return deterministic fallback content so the MVP can be
 tested end to end.
 

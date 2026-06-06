@@ -36,9 +36,13 @@ export function ProjectWizard() {
   const [tone, setTone] = useState(tones[0]);
   const [language, setLanguage] = useState("English");
   const [desiredLengthSeconds, setDesiredLengthSeconds] = useState(360);
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState("");
 
-  function submitProject(event: FormEvent<HTMLFormElement>) {
+  async function submitProject(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setIsSaving(true);
+    setError("");
 
     const now = new Date().toISOString();
     const project: Project = {
@@ -59,8 +63,14 @@ export function ProjectWizard() {
       updatedAt: now
     };
 
-    saveProject(project);
-    router.push(`/app/projects/${project.id}`);
+    try {
+      const savedProject = await saveProject(project);
+      router.push(`/app/projects/${savedProject.id}`);
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "Could not save the project to Supabase.");
+    } finally {
+      setIsSaving(false);
+    }
   }
 
   return (
@@ -195,10 +205,11 @@ export function ProjectWizard() {
       </div>
 
       <div className="actions">
-        <button className="button primary" type="submit">
-          Create production workspace
+        <button className="button primary" disabled={isSaving} type="submit">
+          {isSaving ? "Saving..." : "Create production workspace"}
         </button>
       </div>
+      {error && <div className="notice">{error}</div>}
     </form>
   );
 }

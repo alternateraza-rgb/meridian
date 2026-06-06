@@ -16,10 +16,17 @@ function metric(projects: Project[], label: string, predicate: (project: Project
 
 export function Dashboard() {
   const [projects, setProjects] = useState<Project[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const handle = window.setTimeout(() => {
-      setProjects(readProjects().filter((project) => project.status !== "archived"));
+      readProjects()
+        .then((items) => setProjects(items.filter((project) => project.status !== "archived")))
+        .catch((caught) =>
+          setError(caught instanceof Error ? caught.message : "Could not load projects from Supabase.")
+        )
+        .finally(() => setIsLoading(false));
     }, 0);
 
     return () => window.clearTimeout(handle);
@@ -66,11 +73,20 @@ export function Dashboard() {
         <div className="page-heading">
           <div>
             <h2 style={{ fontSize: "2rem", margin: 0 }}>Recent projects</h2>
-            <p className="muted">Demo projects are stored in local storage for this MVP build.</p>
+            <p className="muted">
+              Logged-in users are stored in Supabase. Visitors without a session use local demo storage.
+            </p>
           </div>
         </div>
 
-        {projects.length === 0 ? (
+        {error && <div className="notice">{error}</div>}
+
+        {isLoading ? (
+          <div className="card card-inner">
+            <h3>Loading projects...</h3>
+            <p className="muted">Checking your Supabase workspace.</p>
+          </div>
+        ) : projects.length === 0 ? (
           <div className="card card-inner">
             <div className="grid two">
               <div>

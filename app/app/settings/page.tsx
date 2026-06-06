@@ -6,8 +6,8 @@ export default function SettingsPage() {
           <div className="eyebrow">Settings</div>
           <h1>Workspace configuration.</h1>
           <p className="muted">
-            This MVP is ready for Supabase auth and workspace persistence. Add environment variables,
-            apply the migration, then replace demo persistence with database calls.
+            This MVP saves logged-in projects and generated production assets to Supabase. Visitors
+            without a session can still use local demo storage.
           </p>
         </div>
       </div>

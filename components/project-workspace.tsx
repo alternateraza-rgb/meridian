@@ -54,8 +54,12 @@ export function ProjectWorkspace({ projectId }: { projectId: string }) {
 
   useEffect(() => {
     const handle = window.setTimeout(() => {
-      setProject(findProject(projectId) || null);
-      setHasLoaded(true);
+      findProject(projectId)
+        .then((item) => setProject(item || null))
+        .catch((caught) =>
+          setError(caught instanceof Error ? caught.message : "Could not load this project from Supabase.")
+        )
+        .finally(() => setHasLoaded(true));
     }, 0);
 
     return () => window.clearTimeout(handle);
@@ -72,10 +76,10 @@ export function ProjectWorkspace({ projectId }: { projectId: string }) {
     return Math.round((items.filter(Boolean).length / items.length) * 100);
   }, [project]);
 
-  function updateProject(nextProject: Project) {
+  async function updateProject(nextProject: Project) {
     const withTimestamp = { ...nextProject, updatedAt: new Date().toISOString() };
-    saveProject(withTimestamp);
-    setProject(withTimestamp);
+    const savedProject = await saveProject(withTimestamp);
+    setProject(savedProject);
   }
 
   async function generateResearch() {
@@ -90,7 +94,7 @@ export function ProjectWorkspace({ projectId }: { projectId: string }) {
       const { researchBrief } = await postJson<{ researchBrief: ResearchBrief }>("/api/ai/research", {
         project
       });
-      updateProject({ ...project, researchBrief, status: "ready" });
+      await updateProject({ ...project, researchBrief, status: "ready" });
       setTab("research");
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Research generation failed.");
@@ -112,7 +116,7 @@ export function ProjectWorkspace({ projectId }: { projectId: string }) {
         project,
         researchBrief: project.researchBrief
       });
-      updateProject({ ...project, script, status: "ready" });
+      await updateProject({ ...project, script, status: "ready" });
       setTab("script");
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Script generation failed.");
@@ -137,7 +141,7 @@ export function ProjectWorkspace({ projectId }: { projectId: string }) {
           script: project.script
         }
       );
-      updateProject({ ...project, storyboardScenes, status: "ready" });
+      await updateProject({ ...project, storyboardScenes, status: "ready" });
       setTab("storyboard");
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Storyboard generation failed.");
@@ -159,7 +163,7 @@ export function ProjectWorkspace({ projectId }: { projectId: string }) {
       const { shotList } = await postJson<{ shotList: ShotListItem[] }>("/api/ai/shot-list", {
         storyboardScenes: project.storyboardScenes
       });
-      updateProject({ ...project, shotList, status: "ready" });
+      await updateProject({ ...project, shotList, status: "ready" });
       setTab("shot-list");
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Shot list generation failed.");
@@ -189,20 +193,29 @@ export function ProjectWorkspace({ projectId }: { projectId: string }) {
     }
   }
 
-  function archiveCurrentProject() {
+  async function archiveCurrentProject() {
     if (!project) {
       return;
     }
 
-    archiveProject(project.id);
-    router.push("/app");
+    setLoading("archive");
+    setError("");
+
+    try {
+      await archiveProject(project.id);
+      router.push("/app");
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "Could not archive this project.");
+    } finally {
+      setLoading("");
+    }
   }
 
   if (!hasLoaded) {
     return (
       <div className="card card-inner">
         <h1>Loading project...</h1>
-        <p className="muted">Opening the local demo workspace.</p>
+        <p className="muted">Opening the Supabase workspace.</p>
       </div>
     );
   }
@@ -211,7 +224,7 @@ export function ProjectWorkspace({ projectId }: { projectId: string }) {
     return (
       <div className="card card-inner">
         <h1>Project not found</h1>
-        <p className="muted">This demo project may live in another browser or may have been archived.</p>
+        <p className="muted">This project may be in another account, in demo storage, or archived.</p>
         <Link className="button primary" href="/app/projects/new">
           Create a project
         </Link>
