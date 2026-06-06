@@ -48,41 +48,42 @@ export default function HomePage() {
 
       <main>
         <section className="container hero">
-          <div>
-            <div className="eyebrow">AI pre-production studio</div>
-            <h1>From rough idea to production-ready video plan.</h1>
-            <p>
-              Meridian helps creators, editors, marketing teams, and newsrooms turn topics, articles,
-              scripts, and story ideas into research briefs, scripts, storyboards, shot lists, and
-              export packages.
-            </p>
-            <div className="actions">
-              <Link className="button primary" href="/app/projects/new">
-                Start a project <ArrowRight size={18} />
-              </Link>
-              <Link className="button" href="/app">
-                View dashboard
-              </Link>
-            </div>
-          </div>
-
-          <div className="card studio-preview">
+          <div className="card studio-preview runway-hero">
             <div className="preview-header">
-              <strong>Documentary workflow</strong>
+              <strong>Meridian AI Studio</strong>
               <span className="status-pill">Ready to export</span>
             </div>
-            <div className="preview-body">
-              <div className="timeline-row">
-                <strong>01 Research angle</strong>
-                <span className="muted">What changed, who is affected, and what must be verified?</span>
+            <div className="runway-hero-content">
+              <div>
+                <div className="eyebrow">AI pre-production studio</div>
+                <h1>From rough idea to production-ready video plan.</h1>
+                <p>
+                  Meridian helps creators, editors, marketing teams, and newsrooms turn topics,
+                  articles, scripts, and story ideas into research briefs, scripts, storyboards, shot
+                  lists, and export packages.
+                </p>
+                <div className="actions">
+                  <Link className="button primary" href="/app/projects/new">
+                    Get started <ArrowRight size={18} />
+                  </Link>
+                  <Link className="button secondary" href="/app">
+                    View dashboard
+                  </Link>
+                </div>
               </div>
-              <div className="timeline-row">
-                <strong>02 Voiceover script</strong>
-                <span className="muted">Hook, context, three acts, clean transitions, and CTA.</span>
-              </div>
-              <div className="timeline-row">
-                <strong>03 Storyboard scenes</strong>
-                <span className="muted">B-roll, text cards, visuals, editor notes, and estimated timing.</span>
+              <div className="preview-body">
+                <div className="timeline-row">
+                  <strong>Research</strong>
+                  <span className="muted">Sources, claims, narrative angle</span>
+                </div>
+                <div className="timeline-row">
+                  <strong>Script</strong>
+                  <span className="muted">Hook, narration, sections, CTA</span>
+                </div>
+                <div className="timeline-row">
+                  <strong>Storyboard</strong>
+                  <span className="muted">Scenes, b-roll, text cards, timing</span>
+                </div>
               </div>
             </div>
           </div>
@@ -92,18 +93,16 @@ export default function HomePage() {
           <div className="eyebrow">MVP workflow</div>
           <h2>The production layer before editing begins.</h2>
           <div className="grid four">
-            <div className="grid three">
-              {workflow.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <article className="card card-inner" key={item.title}>
-                    <Icon color="var(--accent)" />
-                    <h3>{item.title}</h3>
-                    <p className="muted">{item.text}</p>
-                  </article>
-                );
-              })}
-            </div>
+            {workflow.map((item) => {
+              const Icon = item.icon;
+              return (
+                <article className="card card-inner" key={item.title}>
+                  <Icon color="var(--accent)" />
+                  <h3>{item.title}</h3>
+                  <p className="muted">{item.text}</p>
+                </article>
+              );
+            })}
           </div>
         </section>
 
