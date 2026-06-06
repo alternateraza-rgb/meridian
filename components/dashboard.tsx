@@ -18,7 +18,11 @@ export function Dashboard() {
   const [projects, setProjects] = useState<Project[]>([]);
 
   useEffect(() => {
-    setProjects(readProjects().filter((project) => project.status !== "archived"));
+    const handle = window.setTimeout(() => {
+      setProjects(readProjects().filter((project) => project.status !== "archived"));
+    }, 0);
+
+    return () => window.clearTimeout(handle);
   }, []);
 
   const metrics = useMemo(

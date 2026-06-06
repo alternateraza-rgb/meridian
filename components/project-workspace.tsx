@@ -47,12 +47,18 @@ async function postJson<T>(url: string, body: unknown): Promise<T> {
 export function ProjectWorkspace({ projectId }: { projectId: string }) {
   const router = useRouter();
   const [project, setProject] = useState<Project | null>(null);
+  const [hasLoaded, setHasLoaded] = useState(false);
   const [tab, setTab] = useState<Tab>("overview");
   const [loading, setLoading] = useState<string>("");
   const [error, setError] = useState("");
 
   useEffect(() => {
-    setProject(findProject(projectId) || null);
+    const handle = window.setTimeout(() => {
+      setProject(findProject(projectId) || null);
+      setHasLoaded(true);
+    }, 0);
+
+    return () => window.clearTimeout(handle);
   }, [projectId]);
 
   const completion = useMemo(() => {
@@ -190,6 +196,15 @@ export function ProjectWorkspace({ projectId }: { projectId: string }) {
 
     archiveProject(project.id);
     router.push("/app");
+  }
+
+  if (!hasLoaded) {
+    return (
+      <div className="card card-inner">
+        <h1>Loading project...</h1>
+        <p className="muted">Opening the local demo workspace.</p>
+      </div>
+    );
   }
 
   if (!project) {
